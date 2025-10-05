@@ -1,18 +1,25 @@
 import React, { useEffect, useState } from "react";
-import OrganigramaPersona from "./components/OrganigramaPersona";
 import { fetchOrganigramaPersona } from "./services/organigramaService";
+import { getUserIdFromDOM } from "./utils/getUserId";
 
 function App() {
-  const [data, setData] = useState<any[]>([]);
+    const userId = getUserIdFromDOM();
 
   useEffect(() => {
-    fetchOrganigramaPersona().then(setData).catch(console.error);
+    const [data, setData] = useState(null);
+
+    useEffect(() => {
+      fetchOrganigramaPersona().then(setData).catch(console.error);
+    }, []);
   }, []);
 
-  return (
+ return (
     <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">Organigrama Personas</h1>
-      <OrganigramaPersona data={data} />
+      <h1 className="text-xl font-bold">Organigrama Personas</h1>
+      <p className="mt-2 text-gray-700">
+         <strong>Usuario logueado:</strong> {userId || "No recibido"}
+      </p>
+      {/* aquí puedes cargar tu componente Organigrama */}
     </div>
   );
 }

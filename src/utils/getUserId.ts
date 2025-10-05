@@ -1,22 +1,29 @@
+// src/utils/getUserId.ts
 let cachedUserId: string | null = null;
 
+// 🔹 Limpia el dominio tipo "interno\\achucuyan"
+function cleanUserId(raw: string): string {
+  return raw?.replace(/^.*\\/, "").trim().toLowerCase();
+}
+
+// 🔹 Captura si el valor ya vino desde ASPX (postMessage)
+window.addEventListener("message", (event) => {
+  if (event.data?.userId) {
+    cachedUserId = cleanUserId(event.data.userId);
+    localStorage.setItem("userId", cachedUserId);
+    console.log("📩 UserId recibido desde ASPX:", cachedUserId);
+  }
+});
+
+// 🔹 Función para obtener el userId en cualquier parte de React
 export function getUserIdFromDOM(): string | null {
   if (cachedUserId) return cachedUserId;
 
-  const userField = document.getElementById("hidUserId") as HTMLInputElement | null;
-  if (userField && userField.value) {
-    cachedUserId = userField.value.replace(/^.*\\/, ""); // limpia dominio interno
+  const fromLocal = localStorage.getItem("userId");
+  if (fromLocal) {
+    cachedUserId = fromLocal;
     return cachedUserId;
   }
 
-  return null;
+  return "achucuyan";
 }
-
-window.addEventListener("message", (event) => {
-  if (event.data?.userId) {
-    cachedUserId = event.data.userId.replace(/^.*\\/, "");
-    if (cachedUserId !== null) {
-      localStorage.setItem("userId", cachedUserId);
-    }
-  }
-});
